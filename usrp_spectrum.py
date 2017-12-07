@@ -274,45 +274,49 @@ def main_loop(tb):
 
     timestamp = 0
     centerfreq = 0
+    while 1:
 
-    # Get the next message sent from the C++ code (blocking call).
-    # It contains the center frequency and the mag squared of the fft
-    m = parse_msg(tb.msgq.delete_head())
+        # Get the next message sent from the C++ code (blocking call).
+        # It contains the center frequency and the mag squared of the fft
+        m = parse_msg(tb.msgq.delete_head())
 
-    # m.center_freq is the center frequency at the time of capture
-    # m.data are the mag_squared of the fft output
-    # m.raw_data is a string that contains the binary floats.
-    # You could write this as binary to a file.
+        # m.center_freq is the center frequency at the time of capture
+        # m.data are the mag_squared of the fft output
+        # m.raw_data is a string that contains the binary floats.
+        # You could write this as binary to a file.
 
-    # Scanning rate
-    timestamp = time.time()
-    centerfreq = m.center_freq
+        # Scanning rate
+        if timestamp == 0:
+            timestamp = time.time()
+            centerfreq = m.center_freq
+        if m.center_freq < centerfreq:
+            sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
+            timestamp = time.time()
+            sys.exit(0)
+        centerfreq = m.center_freq
 
-    for i_bin in range(bin_start, bin_stop):
+        for i_bin in range(bin_start, bin_stop):
 
-        center_freq = m.center_freq
-        freq = bin_freq(i_bin, center_freq)
-        #noise_floor_db = -174 + 10*math.log10(tb.channel_bandwidth)
-        noise_floor_db = 10*math.log10(min(m.data)/tb.usrp_rate)
-        power_db = 10*math.log10(m.data[i_bin]/tb.usrp_rate) - noise_floor_db
+            center_freq = m.center_freq
+            freq = bin_freq(i_bin, center_freq)
+            #noise_floor_db = -174 + 10*math.log10(tb.channel_bandwidth)
+            noise_floor_db = 10*math.log10(min(m.data)/tb.usrp_rate)
+            power_db = 10*math.log10(m.data[i_bin]/tb.usrp_rate) - noise_floor_db
 
-        if (power_db > tb.squelch_threshold) and (freq >= tb.min_freq) and (freq <= tb.max_freq):
-            freq_mag = "Hz"
-            if (freq >= 1000000000):
-                freq = freq / 1000000000
-                freq_mag = "GHz"
-            elif (freq >= 1000000):
-                freq = freq / 1000000
-                freq_mag = "MHz"
-            elif (freq >= 1000):
-                freq = freq / 1000
-                freq_mag = "KHz"
+            if (power_db > tb.squelch_threshold) and (freq >= tb.min_freq) and (freq <= tb.max_freq):
+                freq_mag = "Hz"
+                if (freq >= 1000000000):
+                    freq = freq / 1000000000
+                    freq_mag = "GHz"
+                elif (freq >= 1000000):
+                    freq = freq / 1000000
+                    freq_mag = "MHz"
+                elif (freq >= 1000):
+                    freq = freq / 1000
+                    freq_mag = "KHz"
 
-            #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
-            print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
-
-    if m.center_freq < centerfreq:
-        sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
+                #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
+                print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
 
 if __name__ == '__main__':
     t = ThreadClass()
