@@ -298,7 +298,6 @@ def main_loop(tb):
         if m.center_freq < centerfreq:
             sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
             timestamp = time.time()
-            print_list(power_db_list)
             return
         centerfreq = m.center_freq
 
