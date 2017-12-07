@@ -311,9 +311,8 @@ def main_loop(tb):
             #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
             print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
 
-
     if m.center_freq < centerfreq:
-    sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
+        sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
 
 if __name__ == '__main__':
     t = ThreadClass()
