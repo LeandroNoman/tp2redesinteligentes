@@ -303,7 +303,7 @@ def main_loop(tb):
             power_db = 10*math.log10(m.data[i_bin]/tb.usrp_rate) - noise_floor_db
 
             if (power_db > tb.squelch_threshold) and (freq >= tb.min_freq) and (freq <= tb.max_freq):
-                print datetime.now(), "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
+                print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
 
 if __name__ == '__main__':
     t = ThreadClass()
