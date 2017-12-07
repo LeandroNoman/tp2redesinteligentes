@@ -303,7 +303,19 @@ def main_loop(tb):
             power_db = 10*math.log10(m.data[i_bin]/tb.usrp_rate) - noise_floor_db
 
             if (power_db > tb.squelch_threshold) and (freq >= tb.min_freq) and (freq <= tb.max_freq):
-                print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
+                freq_mag = "Hz"
+                if (freq >= 1000000000):
+                    freq = freq / 1000000000
+                    freq_mag = "GHz"
+                elif (freq >= 1000000):
+                    freq = freq / 1000000
+                    freq_mag = "MHz"
+                elif (freq >= 1000):
+                    freq = freq / 1000
+                    freq_mag = "KHz"
+
+                #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
+                print freq, freq_mag, ":", "%.3f" % power_db, "dB"
 
 if __name__ == '__main__':
     t = ThreadClass()
