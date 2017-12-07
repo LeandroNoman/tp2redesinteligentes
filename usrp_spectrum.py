@@ -292,6 +292,7 @@ def main_loop(tb):
         if m.center_freq < centerfreq:
             sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
             timestamp = time.time()
+            break
         centerfreq = m.center_freq
 
         for i_bin in range(bin_start, bin_stop):
