@@ -269,8 +269,14 @@ def main_loop(tb):
         #print "freq rounded:",freq
         return freq
 
+    def print_list(listToPrint):
+        for i in listToPrint:
+            print "%.3f" % i
+
     bin_start = int(tb.fft_size * ((1 - 0.75) / 2))
     bin_stop = int(tb.fft_size - bin_start)
+
+    power_db_list = []
 
     timestamp = 0
     centerfreq = 0
@@ -292,6 +298,7 @@ def main_loop(tb):
         if m.center_freq < centerfreq:
             sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
             timestamp = time.time()
+            print_list(power_db_list)
             return
         centerfreq = m.center_freq
 
@@ -302,6 +309,7 @@ def main_loop(tb):
             #noise_floor_db = -174 + 10*math.log10(tb.channel_bandwidth)
             noise_floor_db = 10*math.log10(min(m.data)/tb.usrp_rate)
             power_db = 10*math.log10(m.data[i_bin]/tb.usrp_rate) - noise_floor_db
+            power_db_list.append(power_db)
 
             if (power_db > tb.squelch_threshold) and (freq >= tb.min_freq) and (freq <= tb.max_freq):
                 freq_mag = "Hz"
