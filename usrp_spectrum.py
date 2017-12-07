@@ -315,8 +315,19 @@ def main_loop(tb):
                     freq = freq / 1000
                     freq_mag = "KHz"
 
+                center_freq_mag = "Hz"
+                if (center_freq >= 1000000000):
+                    center_freq = center_freq / 1000000000
+                    center_freq_mag = "GHz"
+                elif (center_freq >= 1000000):
+                    center_freq = center_freq / 1000000
+                    center_freq_mag = "MHz"
+                elif (center_freq >= 1000):
+                    center_freq = center_freq / 1000
+                    center_freq_mag = "KHz"
+
                 #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
-                print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
+                print "%.3f" % center_freq, center_freq_mag, "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
 
 if __name__ == '__main__':
     t = ThreadClass()
