@@ -35,8 +35,6 @@ import threading
 from datetime import datetime
 import time
 
-sys.stderr.write("Warning: this may have issues on some machines+Python version combinations to seg fault due to the callback in bin_statitics.\n\n")
-
 class ThreadClass(threading.Thread):
     def run(self):
         return
@@ -225,9 +223,6 @@ class my_top_block(gr.top_block):
         return freq
 
 def main_loop(tb, power_db_thresh, band_thresh):
-
-    print "DB THRESHOLD ==== ", power_db_thresh
-    print "BANDWIDTH TRESHOLD ====== ", band_thresh
 
     def bin_freq(i_bin, center_freq):
         #hz_per_bin = tb.usrp_rate / tb.fft_size
