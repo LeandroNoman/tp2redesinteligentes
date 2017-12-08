@@ -305,7 +305,7 @@ def main_loop(tb):
                     print "to",
                     print_freq(last_freq)
                     print ":",
-                    print_freq(first_freq - last_freq)
+                    print_freq(last_freq - first_freq)
                     print "bandwidth"
             #Starting new transmission
             else:
