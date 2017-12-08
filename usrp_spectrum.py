@@ -95,45 +95,10 @@ class parse_msg(object):
 
 class my_top_block(gr.top_block):
 
-    def __init__(self):
+    def __init__(self, parser):
         gr.top_block.__init__(self)
 
-        usage = "usage: %prog [options] min_freq max_freq"
-        parser = OptionParser(option_class=eng_option, usage=usage)
-        parser.add_option("-a", "--args", type="string", default="",
-                          help="UHD device device address args [default=%default]")
-        parser.add_option("", "--spec", type="string", default=None,
-	                  help="Subdevice of UHD device where appropriate")
-        parser.add_option("-A", "--antenna", type="string", default=None,
-                          help="select Rx Antenna where appropriate")
-        parser.add_option("-s", "--samp-rate", type="eng_float", default=1e6,
-                          help="set sample rate [default=%default]")
-        parser.add_option("-g", "--gain", type="eng_float", default=None,
-                          help="set gain in dB (default is midpoint)")
-        parser.add_option("", "--tune-delay", type="eng_float",
-                          default=0.25, metavar="SECS",
-                          help="time to delay (in seconds) after changing frequency [default=%default]")
-        parser.add_option("", "--dwell-delay", type="eng_float",
-                          default=0.25, metavar="SECS",
-                          help="time to dwell (in seconds) at a given frequency [default=%default]")
-        parser.add_option("-b", "--channel-bandwidth", type="eng_float",
-                          default=6.25e3, metavar="Hz",
-                          help="channel bandwidth of fft bins in Hz [default=%default]")
-        parser.add_option("-l", "--lo-offset", type="eng_float",
-                          default=0, metavar="Hz",
-                          help="lo_offset in Hz [default=%default]")
-        parser.add_option("-q", "--squelch-threshold", type="eng_float",
-                          default=None, metavar="dB",
-                          help="squelch threshold in dB [default=%default]")
-        parser.add_option("-F", "--fft-size", type="int", default=None,
-                          help="specify number of FFT bins [default=samp_rate/channel_bw]")
-        parser.add_option("", "--real-time", action="store_true", default=False,
-                          help="Attempt to enable real-time scheduling")
-
         (options, args) = parser.parse_args()
-        if len(args) != 2:
-            parser.print_help()
-            sys.exit(1)
 
         self.channel_bandwidth = options.channel_bandwidth
 
@@ -388,7 +353,44 @@ if __name__ == '__main__':
     t = ThreadClass()
     t.start()
 
-    tb = my_top_block()
+    usage = "usage: %prog [options] min_freq max_freq"
+    parser = OptionParser(option_class=eng_option, usage=usage)
+    parser.add_option("-a", "--args", type="string", default="",
+                      help="UHD device device address args [default=%default]")
+    parser.add_option("", "--spec", type="string", default=None,
+                  help="Subdevice of UHD device where appropriate")
+    parser.add_option("-A", "--antenna", type="string", default=None,
+                      help="select Rx Antenna where appropriate")
+    parser.add_option("-s", "--samp-rate", type="eng_float", default=1e6,
+                      help="set sample rate [default=%default]")
+    parser.add_option("-g", "--gain", type="eng_float", default=None,
+                      help="set gain in dB (default is midpoint)")
+    parser.add_option("", "--tune-delay", type="eng_float",
+                      default=0.25, metavar="SECS",
+                      help="time to delay (in seconds) after changing frequency [default=%default]")
+    parser.add_option("", "--dwell-delay", type="eng_float",
+                      default=0.25, metavar="SECS",
+                      help="time to dwell (in seconds) at a given frequency [default=%default]")
+    parser.add_option("-b", "--channel-bandwidth", type="eng_float",
+                      default=6.25e3, metavar="Hz",
+                      help="channel bandwidth of fft bins in Hz [default=%default]")
+    parser.add_option("-l", "--lo-offset", type="eng_float",
+                      default=0, metavar="Hz",
+                      help="lo_offset in Hz [default=%default]")
+    parser.add_option("-q", "--squelch-threshold", type="eng_float",
+                      default=None, metavar="dB",
+                      help="squelch threshold in dB [default=%default]")
+    parser.add_option("-F", "--fft-size", type="int", default=None,
+                      help="specify number of FFT bins [default=samp_rate/channel_bw]")
+    parser.add_option("", "--real-time", action="store_true", default=False,
+                      help="Attempt to enable real-time scheduling")
+
+    (options, args) = parser.parse_args()
+    if len(args) != 2:
+        parser.print_help()
+        sys.exit(1)
+
+    tb = my_top_block(parser)
     try:
         tb.start()
         main_loop(tb)
