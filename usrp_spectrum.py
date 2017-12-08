@@ -375,7 +375,7 @@ if __name__ == '__main__':
     parser.add_option("", "--dwell-delay", type="eng_float",
                       default=0.25, metavar="SECS",
                       help="time to dwell (in seconds) at a given frequency [default=%default]")
-    parser.add_option("-cb", "--channel-bandwidth", type="eng_float",
+    parser.add_option("-c", "--channel-bandwidth", type="eng_float",
                       default=6.25e3, metavar="Hz",
                       help="channel bandwidth of fft bins in Hz [default=%default]")
     parser.add_option("-l", "--lo-offset", type="eng_float",
