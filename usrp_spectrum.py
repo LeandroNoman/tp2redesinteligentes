@@ -286,6 +286,7 @@ def main_loop(tb, power_db_thresh, band_thresh):
 
     timestamp = 0
     centerfreq = 0
+    freq = 0
     while 1:
 
         # Get the next message sent from the C++ code (blocking call).
@@ -302,7 +303,7 @@ def main_loop(tb, power_db_thresh, band_thresh):
         if timestamp == 0:
             timestamp = time.time()
             centerfreq = m.center_freq
-        if m.center_freq < centerfreq:
+        if m.center_freq < centerfreq or freq > tb.max_freq:
             sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
             timestamp = time.time()
             find_sig_and_bw(power_db_list, freq_list)
