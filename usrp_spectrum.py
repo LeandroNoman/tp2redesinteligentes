@@ -298,6 +298,7 @@ def main_loop(tb, power_db_thresh, band_thresh):
         # You could write this as binary to a file.
 
         # Scanning rate
+        print m.center_freq, centerfreq
         if timestamp == 0:
             timestamp = time.time()
             centerfreq = m.center_freq
