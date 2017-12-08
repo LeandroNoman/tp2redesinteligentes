@@ -261,6 +261,8 @@ class my_top_block(gr.top_block):
 
 def main_loop(tb):
 
+    POWERDBTHRESHOLD = 7.0
+
     def bin_freq(i_bin, center_freq):
         #hz_per_bin = tb.usrp_rate / tb.fft_size
         freq = center_freq - (tb.usrp_rate / 2) + (tb.channel_bandwidth * i_bin)
@@ -273,10 +275,30 @@ def main_loop(tb):
         for i in listToPrint:
             print "%.3f" % i
 
+    def find_sig_and_bw(power_list, freq_list):
+        flag_higher_thresh = False
+        first_freq = 0.0
+        last_freq = 0.0
+
+        for ind, power in enumerate(power_list):
+            #Meaning we are in a transmission
+            if(flag_higher_thresh):
+                if(power < POWERDBTHRESHOLD):
+                    flag_higher_thresh = False
+                    last_freq = freq_list[ind]
+                    print "Signal from", "%.3f" % first_freq, "to", "%.3f" % last_freq, ":", "%.3f" % (last_freq - first_freq), "bandwidth"
+            #Starting new transmission
+            else:
+                if(power >= POWERDBTHRESHOLD):
+                    flag_higher_thresh = True
+                    first_freq = freq_list[ind]
+
+
     bin_start = int(tb.fft_size * ((1 - 0.75) / 2))
     bin_stop = int(tb.fft_size - bin_start)
 
     power_db_list = []
+    freq_list = []
 
     timestamp = 0
     centerfreq = 0
@@ -298,6 +320,7 @@ def main_loop(tb):
         if m.center_freq < centerfreq:
             sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
             timestamp = time.time()
+            find_sig_and_bw(power_db_list, freq_list)
             return
         centerfreq = m.center_freq
 
@@ -309,6 +332,7 @@ def main_loop(tb):
             noise_floor_db = 10*math.log10(min(m.data)/tb.usrp_rate)
             power_db = 10*math.log10(m.data[i_bin]/tb.usrp_rate) - noise_floor_db
             power_db_list.append(power_db)
+            freq_list.append(freq)
 
             if (power_db > tb.squelch_threshold) and (freq >= tb.min_freq) and (freq <= tb.max_freq):
                 freq_mag = "Hz"
