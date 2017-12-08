@@ -224,10 +224,7 @@ class my_top_block(gr.top_block):
         freq = round(freq / channel_bandwidth, 0) * channel_bandwidth
         return freq
 
-def main_loop(tb):
-
-    POWERDBTHRESHOLD = 7.0
-    BANDWIDTHTHRESHOLD = 50e3 #50KHz minimum badwidth
+def main_loop(tb, power_db_thresh, band_thresh):
 
     def bin_freq(i_bin, center_freq):
         #hz_per_bin = tb.usrp_rate / tb.fft_size
@@ -263,11 +260,11 @@ def main_loop(tb):
         for ind, power in enumerate(power_list):
             #Meaning we are in a transmission
             if(flag_higher_thresh):
-                if(power < POWERDBTHRESHOLD):
+                if(power < power_db_thresh):
                     flag_higher_thresh = False
                     last_freq = freq_list[ind - 1]
                     bandwidth_freq = last_freq - first_freq
-                    if(bandwidth_freq < BANDWIDTHTHRESHOLD):
+                    if(bandwidth_freq < band_thresh):
                         continue
                     print "Signal from",
                     print_freq(first_freq)
@@ -278,7 +275,7 @@ def main_loop(tb):
                     print "bandwidth"
             #Starting new transmission
             else:
-                if(power >= POWERDBTHRESHOLD):
+                if(power >= power_db_thresh):
                     flag_higher_thresh = True
                     first_freq = freq_list[ind]
 
@@ -355,6 +352,10 @@ if __name__ == '__main__':
 
     usage = "usage: %prog [options] min_freq max_freq"
     parser = OptionParser(option_class=eng_option, usage=usage)
+    parser.add_option("-d", "--dbthreshold", type="eng_float", default=7.0,
+                      help="Power dB threshold to be considered a transmission [default=%default]")
+    parser.add_option("-b", "--bandthreshold", type="eng_float", default=50e3,
+                      help="Bandwidth threshold to be considered a transmission [default=%default]")
     parser.add_option("-a", "--args", type="string", default="",
                       help="UHD device device address args [default=%default]")
     parser.add_option("", "--spec", type="string", default=None,
@@ -371,7 +372,7 @@ if __name__ == '__main__':
     parser.add_option("", "--dwell-delay", type="eng_float",
                       default=0.25, metavar="SECS",
                       help="time to dwell (in seconds) at a given frequency [default=%default]")
-    parser.add_option("-b", "--channel-bandwidth", type="eng_float",
+    parser.add_option("-cb", "--channel-bandwidth", type="eng_float",
                       default=6.25e3, metavar="Hz",
                       help="channel bandwidth of fft bins in Hz [default=%default]")
     parser.add_option("-l", "--lo-offset", type="eng_float",
