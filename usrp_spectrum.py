@@ -262,6 +262,7 @@ class my_top_block(gr.top_block):
 def main_loop(tb):
 
     POWERDBTHRESHOLD = 7.0
+    BANDWIDTHTHRESHOLD = 50e3 #50KHz minimum badwidth
 
     def bin_freq(i_bin, center_freq):
         #hz_per_bin = tb.usrp_rate / tb.fft_size
@@ -299,13 +300,16 @@ def main_loop(tb):
             if(flag_higher_thresh):
                 if(power < POWERDBTHRESHOLD):
                     flag_higher_thresh = False
-                    last_freq = freq_list[ind]
+                    last_freq = freq_list[ind - 1]
+                    bandwidth_freq = last_freq - first_freq
+                    if(bandwidth_freq < BANDWIDTHTHRESHOLD):
+                        continue
                     print "Signal from",
                     print_freq(first_freq)
                     print "to",
                     print_freq(last_freq)
                     print ":",
-                    print_freq(last_freq - first_freq)
+                    print_freq(bandwidth_freq)
                     print "bandwidth"
             #Starting new transmission
             else:
