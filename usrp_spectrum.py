@@ -226,6 +226,9 @@ class my_top_block(gr.top_block):
 
 def main_loop(tb, power_db_thresh, band_thresh):
 
+    print "DB THRESHOLD ==== ", power_db_thresh
+    print "BANDWIDTH TRESHOLD ====== ", band_thresh
+
     def bin_freq(i_bin, center_freq):
         #hz_per_bin = tb.usrp_rate / tb.fft_size
         freq = center_freq - (tb.usrp_rate / 2) + (tb.channel_bandwidth * i_bin)
@@ -394,7 +397,7 @@ if __name__ == '__main__':
     tb = my_top_block(parser)
     try:
         tb.start()
-        main_loop(tb)
+        main_loop(tb, options.dbthreshold, options.bandthreshold)
 
     except KeyboardInterrupt:
         pass
