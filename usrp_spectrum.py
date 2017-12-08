@@ -271,6 +271,20 @@ def main_loop(tb):
         #print "freq rounded:",freq
         return freq
 
+    def print_freq(freq):
+        freq_mag = "Hz"
+        if (freq >= 1000000000):
+            freq = freq / 1000000000
+            freq_mag = "GHz"
+        elif (freq >= 1000000):
+            freq = freq / 1000000
+            freq_mag = "MHz"
+        elif (freq >= 1000):
+            freq = freq / 1000
+            freq_mag = "KHz"
+
+        print "%.3f" % freq, freq_mag,
+
     def print_list(listToPrint):
         for i in listToPrint:
             print "%.3f" % i
@@ -286,7 +300,13 @@ def main_loop(tb):
                 if(power < POWERDBTHRESHOLD):
                     flag_higher_thresh = False
                     last_freq = freq_list[ind]
-                    print "Signal from", "%.3f" % first_freq, "to", "%.3f" % last_freq, ":", "%.3f" % (last_freq - first_freq), "bandwidth"
+                    print "Signal from",
+                    print_freq(first_freq)
+                    print "to",
+                    print_freq(last_freq)
+                    print ":",
+                    print_freq(first_freq - last_freq)
+                    print "bandwidth"
             #Starting new transmission
             else:
                 if(power >= POWERDBTHRESHOLD):
