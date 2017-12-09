@@ -308,6 +308,7 @@ def main_loop(tb, power_db_thresh, band_thresh):
             find_sig_and_bw(power_db_list, freq_list)
             power_db_list = []
             freq_list = []
+            time.sleep(1000)
             return
         centerfreq = m.center_freq
 
@@ -396,7 +397,6 @@ if __name__ == '__main__':
     try:
         tb.start()
         main_loop(tb, options.dbthreshold, options.bandthreshold)
-        time.sleep(1000)
 
     except KeyboardInterrupt:
         pass
