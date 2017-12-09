@@ -308,7 +308,7 @@ def main_loop(tb, power_db_thresh, band_thresh):
             find_sig_and_bw(power_db_list, freq_list)
             power_db_list = []
             freq_list = []
-            #return
+            return
         centerfreq = m.center_freq
 
         for i_bin in range(bin_start, bin_stop):
@@ -345,7 +345,7 @@ def main_loop(tb, power_db_thresh, band_thresh):
                     center_freq_mag = "KHz"
 
                 #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
-                #print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
+                print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
 
 if __name__ == '__main__':
     t = ThreadClass()
