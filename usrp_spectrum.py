@@ -308,6 +308,7 @@ def main_loop(tb, power_db_thresh, band_thresh):
             find_sig_and_bw(power_db_list, freq_list)
             power_db_list = []
             freq_list = []
+            print "Going to sleep"
             time.sleep(1000)
             return
         centerfreq = m.center_freq
