@@ -56,21 +56,9 @@ class tune(gr.feval_dd):
         """
 
         try:
-            # We use this try block so that if something goes wrong
-            # from here down, at least we'll have a prayer of knowing
-            # what went wrong.  Without this, you get a very
-            # mysterious:
-            #
-            #   terminate called after throwing an instance of
-            #   'Swig::DirectorMethodException' Aborted
-            #
-            # message on stderr.  Not exactly helpful ;)
-
             new_freq = self.tb.set_next_freq()
 
-            # wait until msgq is empty before continuing
             while(self.tb.msgq.full_p()):
-                #print "msgq full, holding.."
                 time.sleep(0.1)
 
             return new_freq
@@ -152,10 +140,6 @@ class my_top_block(gr.top_block):
 
         c2mag = blocks.complex_to_mag_squared(self.fft_size)
 
-        # FIXME the log10 primitive is dog slow
-        #log = blocks.nlog10_ff(10, self.fft_size,
-        #                       -20*math.log10(self.fft_size)-10*math.log10(power/self.fft_size))
-
         # Set the freq_step to 75% of the actual data throughput.
         # This allows us to discard the bins on both ends of the spectrum.
 
@@ -170,13 +154,11 @@ class my_top_block(gr.top_block):
         dwell_delay = max(1, int(round(options.dwell_delay * usrp_rate / self.fft_size))) # in fft_frames
 
         self.msgq = gr.msg_queue(1)
-        self._tune_callback = tune(self)        # hang on to this to keep it from being GC'd
+        self._tune_callback = tune(self)
         stats = blocks.bin_statistics_f(self.fft_size, self.msgq,
                                         self._tune_callback, tune_delay,
                                         dwell_delay)
 
-        # FIXME leave out the log10 until we speed it up
-	#self.connect(self.u, s2v, ffter, c2mag, log, stats)
 	self.connect(self.u, s2v, ffter, c2mag, stats)
 
         if options.gain is None:
@@ -225,11 +207,7 @@ class my_top_block(gr.top_block):
 def main_loop(tb, power_db_thresh, band_thresh, flag_quiet, flag_loop):
 
     def bin_freq(i_bin, center_freq):
-        #hz_per_bin = tb.usrp_rate / tb.fft_size
         freq = center_freq - (tb.usrp_rate / 2) + (tb.channel_bandwidth * i_bin)
-        #print "freq original:",freq
-        #freq = nearest_freq(freq, tb.channel_bandwidth)
-        #print "freq rounded:",freq
         return freq
 
     def print_freq(freq):
@@ -345,7 +323,6 @@ def main_loop(tb, power_db_thresh, band_thresh, flag_quiet, flag_loop):
                     center_freq = center_freq / 1000
                     center_freq_mag = "KHz"
 
-                #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
                 if (not flag_quiet):
                     print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
 
