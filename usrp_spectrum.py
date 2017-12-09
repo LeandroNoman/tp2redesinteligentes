@@ -396,7 +396,7 @@ if __name__ == '__main__':
     try:
         tb.start()
         main_loop(tb, options.dbthreshold, options.bandthreshold)
-        sys.exit(1)
+        time.sleep(1000)
 
     except KeyboardInterrupt:
         pass
