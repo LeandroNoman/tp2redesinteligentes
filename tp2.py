@@ -222,7 +222,7 @@ class my_top_block(gr.top_block):
         freq = round(freq / channel_bandwidth, 0) * channel_bandwidth
         return freq
 
-def main_loop(tb, power_db_thresh, band_thresh):
+def main_loop(tb, power_db_thresh, band_thresh, flag_quiet, flag_loop):
 
     def bin_freq(i_bin, center_freq):
         #hz_per_bin = tb.usrp_rate / tb.fft_size
@@ -308,9 +308,8 @@ def main_loop(tb, power_db_thresh, band_thresh):
             find_sig_and_bw(power_db_list, freq_list)
             power_db_list = []
             freq_list = []
-            print "Going to sleep"
-            time.sleep(1000)
-            return
+            if (not flag_loop):
+                return
         centerfreq = m.center_freq
 
         for i_bin in range(bin_start, bin_stop):
@@ -347,7 +346,8 @@ def main_loop(tb, power_db_thresh, band_thresh):
                     center_freq_mag = "KHz"
 
                 #print "center_freq", center_freq, "freq", freq, "power_db", power_db, "noise_floor_db", noise_floor_db
-                print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
+                if (not flag_quiet):
+                    print "%.3f" % freq, freq_mag, ":", "%.3f" % power_db, "dB"
 
 if __name__ == '__main__':
     t = ThreadClass()
@@ -359,6 +359,10 @@ if __name__ == '__main__':
                       help="Power dB threshold to be considered a transmission [default=%default]")
     parser.add_option("-b", "--bandthreshold", type="eng_float", default=50e3,
                       help="Bandwidth threshold to be considered a transmission [default=%default]")
+    parser.add_option("-q", "--quiet", type="store_true", default=False,
+                      help="Quiet mode, prints only active frequencies and bandwidth")
+    parser.add_option("-l", "--loop", type="store_true", default=False,
+                      help="Loop through the frequencies, not stopping when the max frequency is reached")
     parser.add_option("-a", "--args", type="string", default="",
                       help="UHD device device address args [default=%default]")
     parser.add_option("", "--spec", type="string", default=None,
@@ -378,10 +382,10 @@ if __name__ == '__main__':
     parser.add_option("-c", "--channel-bandwidth", type="eng_float",
                       default=6.25e3, metavar="Hz",
                       help="channel bandwidth of fft bins in Hz [default=%default]")
-    parser.add_option("-l", "--lo-offset", type="eng_float",
+    parser.add_option("-o", "--lo-offset", type="eng_float",
                       default=0, metavar="Hz",
                       help="lo_offset in Hz [default=%default]")
-    parser.add_option("-q", "--squelch-threshold", type="eng_float",
+    parser.add_option("-u", "--squelch-threshold", type="eng_float",
                       default=None, metavar="dB",
                       help="squelch threshold in dB [default=%default]")
     parser.add_option("-F", "--fft-size", type="int", default=None,
@@ -397,7 +401,7 @@ if __name__ == '__main__':
     tb = my_top_block(parser)
     try:
         tb.start()
-        main_loop(tb, options.dbthreshold, options.bandthreshold)
+        main_loop(tb, options.dbthreshold, options.bandthreshold, options.quiet, options.loop)
 
     except KeyboardInterrupt:
         pass
