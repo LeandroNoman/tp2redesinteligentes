@@ -306,6 +306,8 @@ def main_loop(tb, power_db_thresh, band_thresh):
             sys.stderr.write("scanned %.1fMHz in %.1fs\n" % ((centerfreq - m.center_freq)/1.0e6, time.time() - timestamp))
             timestamp = time.time()
             find_sig_and_bw(power_db_list, freq_list)
+            power_db_list = []
+            freq_list = []
             #return
         centerfreq = m.center_freq
 
