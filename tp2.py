@@ -336,9 +336,9 @@ if __name__ == '__main__':
                       help="Power dB threshold to be considered a transmission [default=%default]")
     parser.add_option("-b", "--bandthreshold", type="eng_float", default=50e3,
                       help="Bandwidth threshold to be considered a transmission [default=%default]")
-    parser.add_option("-q", "--quiet", type="store_true", default=False,
+    parser.add_option("-q", "--quiet", action="store_true", default=False,
                       help="Quiet mode, prints only active frequencies and bandwidth")
-    parser.add_option("-l", "--loop", type="store_true", default=False,
+    parser.add_option("-l", "--loop", action="store_true", default=False,
                       help="Loop through the frequencies, not stopping when the max frequency is reached")
     parser.add_option("-a", "--args", type="string", default="",
                       help="UHD device device address args [default=%default]")
